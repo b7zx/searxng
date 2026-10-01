@@ -19,5 +19,41 @@ else
     echo "Warning: SEARXNG_SECRET_KEY environment variable not set, using default"
 fi
 
+# Apply MCP-managed engine disables idempotently
+if [ -f "/etc/searxng/settings.yml" ] && ! grep -q 'mcp-managed-engines' /etc/searxng/settings.yml; then
+    echo "Applying mcp-managed engine disables..."
+    cat >> /etc/searxng/settings.yml <<'EOF'
+
+# mcp-managed-engines
+engines:
+  - name: brave
+    disabled: true
+  - name: brave.images
+    disabled: true
+  - name: brave.news
+    disabled: true
+  - name: brave.videos
+    disabled: true
+  - name: duckduckgo
+    disabled: true
+  - name: duckduckgo images
+    disabled: true
+  - name: duckduckgo news
+    disabled: true
+  - name: duckduckgo videos
+    disabled: true
+  - name: duckduckgo weather
+    disabled: true
+  - name: duckduckgo web
+    disabled: true
+  - name: startpage
+    disabled: true
+  - name: startpage images
+    disabled: true
+  - name: startpage news
+    disabled: true
+EOF
+fi
+
 # Start SearXNG using the original container's startup logic
 exec /usr/local/searxng/entrypoint.sh 
