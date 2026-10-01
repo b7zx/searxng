@@ -19,9 +19,10 @@ else
     echo "Warning: SEARXNG_SECRET_KEY environment variable not set, using default"
 fi
 
-# Apply MCP-managed engine disables idempotently
-if [ -f "/etc/searxng/settings.yml" ] && ! grep -q 'mcp-managed-engines' /etc/searxng/settings.yml; then
-    echo "Applying mcp-managed engine disables..."
+# Apply MCP-managed engine overrides (refreshed on every boot)
+if [ -f "/etc/searxng/settings.yml" ]; then
+    echo "Applying mcp-managed engine overrides..."
+    sed -i '/^# mcp-managed-engines$/,$d' /etc/searxng/settings.yml
     cat >> /etc/searxng/settings.yml <<'EOF'
 
 # mcp-managed-engines
@@ -51,6 +52,14 @@ engines:
   - name: startpage images
     disabled: true
   - name: startpage news
+    disabled: true
+  - name: bing
+    disabled: true
+  - name: bing images
+    disabled: true
+  - name: bing news
+    disabled: true
+  - name: bing videos
     disabled: true
 EOF
 fi
